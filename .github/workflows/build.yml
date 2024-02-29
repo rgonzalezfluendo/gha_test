@@ -1,0 +1,54 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      gstreamer_version:
+        required: false
+        type: string
+        default: ""
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        params:
+          [
+            {'os': ubuntu-18.04, 'distro': bionic},
+            {'os': ubuntu-20.04, 'distro': focal},
+            {'os': ubuntu-22.04, 'distro': jammy},
+            {'os': ubuntu-24.04, 'distro': noble},
+          ]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: bash
+      id: bash
+      run: |
+        echo "123 ${{ matrix.params['distro'] }}"
+        if [[ "${{ matrix.params['distro'] }}" == "noble___no" ]]; then exit 1; fi
+      shell: bash
+
+  notify_result:
+    needs: [
+      build
+    ]
+    if: ${{ failure() && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: bash
+      id: bash
+      run: |
+        echo "This is the end"
+      shell: bash
