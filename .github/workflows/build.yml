@@ -37,10 +37,10 @@ jobs:
       id: bash
       run: |
         echo "123 ${{ matrix.params['distro'] }}"
-        if [[ "${{ matrix.params['distro'] }}" == "noble___no" ]]; then exit 1; fi
+        if [[ "${{ matrix.params['distro'] }}" == "noble" ]]; then exit 1; fi
       shell: bash
 
-  notify_result:
+  notify_failure:
     needs: [
       build
     ]
